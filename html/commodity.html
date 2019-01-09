@@ -98,18 +98,19 @@
 								<span>200个</span>
 							</div>
 							<div class="cont-list layui-clear" id="list-cont">
-								<!--<div class="item">
+
+								<div class="item" v-for="(item , index) in goodList.list">
 									<div class="img">
-										<a href="javascript:;"><img src="../res/static/img/paging_img3.jpg"></a>
+										<a href="javascript:void(0);"><img  :src="'../res/static/img/'+item.photo"></a>
 									</div>
 									<div class="text">
-										<p class="title">森系小清新四件套</p>
+										<p class="title">{{item.goodName}}</p>
 										<p class="price">
-											<span class="pri">￥200</span>
-											<span class="nub">1266付款</span>
+											<span class="pri">￥{{item.price}} {{item.company}}</span>
+											<span class="nub">{{item.context}}</span>
 										</p>
 									</div>
-								</div>-->
+								</div>
 							</div>
 							<!-- 模版引擎导入 -->
 							<!-- <script type="text/html" id="demo">
@@ -139,7 +140,8 @@
 				el: '#app',
 				data: {
 					message: 'Hello Vue.js!',
-					goodssss: [{}]
+					goodssss: [{}],
+					goodList:[{}]
 				},
 				mounted: function(){
 					
@@ -150,7 +152,14 @@
 						}, function() {
 							console.log('请求处理失败');
 						});
-						
+
+					this.$http.post('http://localhost:4433/consumer/goods/get', "", {
+						emulateJSON: true
+					}).then(function(res) {
+						this.goodList=JSON.parse(res.bodyText);
+					}, function() {
+						console.log('请求处理失败');
+					});
 				},
 				methods: {
 					getGoods: function(event) {
