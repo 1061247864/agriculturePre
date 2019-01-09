@@ -143,7 +143,7 @@
 				},
 				mounted: function(){
 					
-					this.$http.post('http://localhost:4433/goods/goods/gettype', "", {
+					this.$http.post('http://localhost:4433/consumer/goods/get', "", {
 							emulateJSON: true
 						}).then(function(res) {
 							var listBox = $(".list-box");
