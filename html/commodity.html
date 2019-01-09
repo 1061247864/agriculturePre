@@ -143,10 +143,9 @@
 				},
 				mounted: function(){
 					
-					this.$http.post('http://localhost:4433/consumer/goods/get', "", {
+					this.$http.post('http://localhost:4433/goods/goods/gettype', "", {
 							emulateJSON: true
 						}).then(function(res) {
-							var listBox = $(".list-box");
 							this.goodssss=JSON.parse(res.bodyText);
 						}, function() {
 							console.log('请求处理失败');
@@ -204,7 +203,8 @@
 			function show(node) {
 				$(node).find("ul").slideToggle();
 			}
-			
+
+
 	
 		
 		</script>
