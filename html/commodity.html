@@ -7,7 +7,6 @@
 		<link rel="stylesheet" type="text/css" href="../res/static/css/main.css">
 		<link rel="stylesheet" type="text/css" href="../res/layui/css/layui.css">
 		<script type="text/javascript" src="../res/layui/layui.js"></script>
-		<script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 		<script src="../res/static/js/vue.js"></script>
 		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
@@ -98,18 +97,19 @@
 								<span>200个</span>
 							</div>
 							<div class="cont-list layui-clear" id="list-cont">
-								<!--<div class="item">
+
+								<div class="item" v-for="(item , index) in goodlist">
 									<div class="img">
-										<a href="javascript:;"><img src="../res/static/img/paging_img3.jpg"></a>
+										<a href="javascript:void(0);"><img  :src="'../res/static/img/'+item.photo"></a>
 									</div>
 									<div class="text">
-										<p class="title">森系小清新四件套</p>
+										<p class="title">{{item.goodName}}</p>
 										<p class="price">
-											<span class="pri">￥200</span>
-											<span class="nub">1266付款</span>
+											<span class="pri">￥{{item.price}} {{item.company}}</span>
+											<span class="nub">{{item.context}}</span>
 										</p>
 									</div>
-								</div>-->
+								</div>
 							</div>
 							<!-- 模版引擎导入 -->
 							<!-- <script type="text/html" id="demo">
@@ -134,41 +134,197 @@
 				</div>
 			</div>
 		</div>
+		<script src="../res/static/js/publicValue.js"></script>
+		<script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
 		<script>
-						new Vue({
+		/*	var goodData = null;*/
+		var toalCount = 0;
+	  var vue= new Vue({
 				el: '#app',
 				data: {
+					laypages: layui.laypage,
+					$: layui.$,
+					mm: layui.mm,
 					message: 'Hello Vue.js!',
-					goodssss: [{}]
+					goodssss: [{}],
+					goodlist:[{}],
+					pageinfo: {},
+					pagetotal:{}
+
+					/*,
+					goodList:[{}]*/
 				},
 				mounted: function(){
-					
-					this.$http.post('http://localhost:4433/goods/goods/gettype', "", {
+					this.pageinfomethod();
+					layui.config({
+						base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+					}).use(['mm', 'laypage', 'jquery'], ()=>{
+
+					/*	var data = null;*/
+
+						/*jQuery.ajax({
+							type:"post",
+							url:urlprofix+"/consumer/goods/get",
+							async:true,
+							dataType:"json",
+							success:function(result){
+								data = result;
+
+
+
+							}
+						});*/
+
+
+					/*	var laypage = layui.laypage,
+								$ = layui.$,
+								mm = layui.mm;*/
+						layui.laypage.render({
+							elem: 'demo0',
+							count: this.pagetotal,//数据总数
+							limit:6,
+							jump: this.pageinfomethod
+
+
+							/*
+									layui.each(thisData.list, function(index, item){
+										arr.push("<div class='item' >"+
+												"<div class='img'>"+
+												"<a href='javascript:void(0);'><img src='../res/static/img/'"+item.photo+"></a>"+
+												"</div>"+
+												"<div class='text'>"+
+												"<p class='title'>"+item.goodName+"</p>"+
+												"<p class='price'>"+
+												"<span class='pri'>￥"+item.price+" "+ item.company+"</span>"+
+												"<span class='nub'>"+item.context+"</span></p></div></div>");
+									});
+									return arr.join('');
+								}();
+							}*/
+						});
+
+						// 模版引擎导入
+						//  var html = demo.innerHTML;
+						//  var listCont = document.getElementById('list-cont');
+						//  // console.log(layui.router("#/about.html"))
+						// mm.request({
+						//     url: '../json/commodity.json',
+						//     success : function(res){
+						//       console.log(res)
+						//       listCont.innerHTML = mm.renderHtml(html,res)
+						//     },
+						//     error: function(res){
+						//       console.log(res);
+						//     }
+						//   })
+
+						$('.sort a').on('click', function() {
+							$(this).addClass('active').siblings().removeClass('active');
+						})
+						$('.list-box dt').on('click', function() {
+							if($(this).attr('off')) {
+								$(this).removeClass('active').siblings('dd').show()
+								$(this).attr('off', '')
+							} else {
+								$(this).addClass('active').siblings('dd').hide()
+								$(this).attr('off', true)
+							}
+						})
+
+					})
+					this.$http.post(urlprofix+'/consumer//goods/gettype', "", {
 							emulateJSON: true
 						}).then(function(res) {
-							var listBox = $(".list-box");
 							this.goodssss=JSON.parse(res.bodyText);
 						}, function() {
 							console.log('请求处理失败');
 						});
-						
+
+
 				},
+
 				methods: {
 					getGoods: function(event) {
 						event.stopPropagation();
+					},
+					pageinfomethod :function(obj){
+						var curr=1;
+						if (obj!=null){
+							curr=JSON.stringify(obj.curr);
+						}
+						this.$http.post(urlprofix+"/consumer/goods/get?currentPage="+curr,"", {
+							emulateJSON: true
+						}).then(function (result){
+							this.pagetotal=JSON.stringify(result.body.total);
+							this.pageinfo=result.body;
+							this.goodlist= result.body.list;
+						},function(){
+
+
+						})
 					}
 				}
 			})
 						
-			layui.config({
+			/*layui.config({
 				base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
 			}).use(['mm', 'laypage', 'jquery'], function() {
+				var data = null;
+
+				jQuery.ajax({
+					type:"post",
+					url:urlprofix+"/consumer/goods/get",
+					async:true,
+					dataType:"json",
+					success:function(result){
+						data = result;
+
+
+
+					}
+				});
+
+
 				var laypage = layui.laypage,
 					$ = layui.$,
 					mm = layui.mm;
 				laypage.render({
 					elem: 'demo0',
-					count: 100 //数据总数
+					count: data.total,//数据总数
+					limit:6,
+					jump: function(obj){
+
+									//alert(JSON.stringify(obj));
+									//模拟渲染
+									document.getElementById('list-cont').innerHTML = function(){
+										var arr = [];
+										var thisData = null;
+
+										jquery.ajax({
+											type:"post",
+								url:urlprofix+"/consumer/goods/get",
+								data:{currentPage:obj.curr},
+								async:true,
+								dataType:"json",
+								success:function(result){
+									thisData = result;
+								}
+							});
+
+							layui.each(thisData.list, function(index, item){
+								arr.push("<div class='item' >"+
+										"<div class='img'>"+
+										"<a href='javascript:void(0);'><img src='../res/static/img/'"+item.photo+"></a>"+
+										"</div>"+
+										"<div class='text'>"+
+										"<p class='title'>"+item.goodName+"</p>"+
+										"<p class='price'>"+
+										"<span class='pri'>￥"+item.price+" "+ item.company+"</span>"+
+										"<span class='nub'>"+item.context+"</span></p></div></div>");
+							});
+							return arr.join('');
+						}();
+					}
 				});
 
 				// 模版引擎导入
@@ -199,14 +355,12 @@
 					}
 				})
 
-			});
-
+			});*/
+		//vue.laypages= layui.laypage;
 			function show(node) {
 				$(node).find("ul").slideToggle();
 			}
-			
-	
-		
+
 		</script>
 
 	</body>
