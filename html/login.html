@@ -111,25 +111,60 @@
   <script src="../res/static/js/publicValue.js"></script>
   <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
   <script type="text/javascript">
+    document.getElementById("title").innerHTML=titleObj;
+
+/*   window.onstorage=function (e) {
+      alert(e.newValue)
+         const  userinfo= window.localStorage.getItem("userKey")
+
+      if(userinfo!=null && userinfo != '')
+      {
+        app.userobj=JSON.parse(userinfo);
+        alert("检测到本地存储，赋值到vue变量")
+      }
+
+    }*/
       var app = new Vue({
           el: "#app",
           data:{
-              useobj: {}
+            userobj: {},
           },
         mounted:function(){
-
-             this.$http.post("title.html","",{
-               emulateJSON:true
-             }).then(function (result) {
-               document.getElementById("title").innerHTML=result.body;
-             })
-
+            this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
 
 
         },
-          methods:{
-              tologin: function(){
+        watch:{
+          userobj:function () {
+            if(!this.userobj)
+            {
+            }else
+            {
 
+            }
+
+          }
+
+        },
+        created:function(){
+
+
+        },
+        computed:{
+
+
+        },
+
+          methods:{
+            logout:function(){
+              window.localStorage.removeItem("userKey")
+              this.userobj=null;
+              layer.msg("退出登录！",{
+                icon:7,
+                time:2000
+              })
+            },
+              tologin: function(){
                  const userCode = window.document.getElementById("userCode").value.trim();
                   const password = window.document.getElementById("password").value.trim();
                   if(!userCode)
@@ -138,23 +173,32 @@
                           icon:2,
                           time: 1000
                       })
-
                   }else if (! password) {
                       layer.msg("密码名不能为空",{
                           icon:2,
                           time: 1000
                       })
                   }else {
-
                       this.$http.post(urlprofix+"/consumer/user/dologin",{userCode: userCode , password : password},{
                           emulateJSON:true
                       }).then(function(result){
                           console.log(result.body.message)
-                          if (result.body.message)
-                              alert(result.body.message)
-                          else
-                              window.localStorage.setItem("userKey",result.body)
-
+                          if (result.body.message){
+                            layer.msg(result.body.message,{
+                              icon:2,
+                              time:2000
+                            })
+                          } else{
+                            window.localStorage.setItem("userKey",JSON.stringify(result.body))
+                            this.userobj=result.body;
+                            layer.msg("登录成功！",{
+                              icon:1,
+                              time:1000
+                            },function(){
+                              document.getElementById("userCode").value="";
+                              document.getElementById("password").value="";
+                            })
+                          }
                       },function(){
 
 
@@ -168,9 +212,16 @@
 
                   })*/
                  /* window.localStorage.setItem("","")*/
-              }
+              },
+
           }
       })
+
+      app.vtitleObj=titleObj;
+
+
+
+
    layui.config({
       base: '../res/static/js/util' //你存放新模块的目录，注意，不是layui的模块目录
     }).use(['jquery','form'],function(){
