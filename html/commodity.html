@@ -73,13 +73,13 @@
 						<div class="title">所有分类</div>
 						<div class="list-box">
 							<dl  v-for="(item , index) in goodssss" >
-								<dt>{{item.typeName}}</dt>
+								<dt @click='findByEvent(item.type,item.typeId)'>{{item.typeName}}</dt>
 
 								
-								<dd onclick="show(this);" v-for="(citem , index) in item.goodTypeList">
+								<dd onclick="show(this);" v-for="(citem , index) in item.goodTypeList"  @click='findByEvent(citem.type,citem.typeId)'>
 									<a href="javascript:void(0);"  >{{citem.typeName}}</a>
 									<ul v-show="false" style="text-indent: 4em;">
-										<li v-for="(ccitems , index) in citem.goodTypeList"  @click="getGoods" >{{ccitems.typeName}}</li>
+										<li v-for="(ccitems , index) in citem.goodTypeList" @click.stop='findByEvent(ccitems.type,ccitems.typeId)'   >{{ccitems.typeName}}</li>
 									</ul>
 								</dd>
 							</dl>
@@ -93,14 +93,14 @@
 								<a href="javascript:;" event='newprod'>新品</a>
 								<a href="javascript:;" event='collection'>收藏</a>
 							</div>
-							<div class="prod-number">
-								<span>200个</span>
-							</div>
+							<!--<div class="prod-number">
+								<span>{{pagetotal}}个</span>
+							</div>-->
 							<div class="cont-list layui-clear" id="list-cont">
 
 								<div class="item" v-for="(item , index) in goodlist">
 									<div class="img">
-										<a href="javascript:void(0);"><img  :src="'../res/static/img/'+item.photo"></a>
+										<a :href="'details.html?goodId='+item.goodId"><img  :src="'../res/static/img/'+item.photo"></a>
 									</div>
 									<div class="text">
 										<p class="title">{{item.goodName}}</p>
@@ -137,8 +137,6 @@
 		<script src="../res/static/js/publicValue.js"></script>
 		<script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
 		<script>
-		/*	var goodData = null;*/
-		var toalCount = 0;
 	  var vue= new Vue({
 				el: '#app',
 				data: {
@@ -149,13 +147,14 @@
 					goodssss: [{}],
 					goodlist:[{}],
 					pageinfo: {},
-					pagetotal:{}
-
+					pagetotal:{},
+					categoryLevel: undefined,
+					boo: false
 					/*,
 					goodList:[{}]*/
 				},
 				mounted: function(){
-					this.pageinfomethod();
+				this.pageinfomethod()
 					layui.config({
 						base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
 					}).use(['mm', 'laypage', 'jquery'], ()=>{
@@ -183,8 +182,8 @@
 							elem: 'demo0',
 							count: this.pagetotal,//数据总数
 							limit:6,
+							layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip'],
 							jump: this.pageinfomethod
-
 
 							/*
 									layui.each(thisData.list, function(index, item){
@@ -242,22 +241,159 @@
 
 
 				},
+		  watch:{
+					boo: function () {
+								layui.config({
+									base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+								}).use(['mm', 'laypage', 'jquery'], ()=>{
+
+									/*	var data = null;*/
+
+									/*jQuery.ajax({
+                                        type:"post",
+                                        url:urlprofix+"/consumer/goods/get",
+                                        async:true,
+                                        dataType:"json",
+                                        success:function(result){
+                                            data = result;
+
+
+
+                                        }
+                                    });*/
+
+
+									/*	var laypage = layui.laypage,
+                                                $ = layui.$,
+                                                mm = layui.mm;*/
+									layui.laypage.render({
+										elem: 'demo0',
+										count: this.pagetotal,//数据总数
+										limit:6,
+										layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip'],
+										jump: this.pageinfomethod
+
+									})
+									// 模版引擎导入
+									//  var html = demo.innerHTML;
+									//  var listCont = document.getElementById('list-cont');
+									//  // console.log(layui.router("#/about.html"))
+									// mm.request({
+									//     url: '../json/commodity.json',
+									//     success : function(res){
+									//       console.log(res)
+									//       listCont.innerHTML = mm.renderHtml(html,res)
+									//     },
+									//     error: function(res){
+									//       console.log(res);
+									//     }
+									//   })
+
+									$('.sort a').on('click', function() {
+										$(this).addClass('active').siblings().removeClass('active');
+									})
+									$('.list-box dt').on('click', function() {
+										if($(this).attr('off')) {
+											$(this).removeClass('active').siblings('dd').show()
+											$(this).attr('off', '')
+										} else {
+											$(this).addClass('active').siblings('dd').hide()
+											$(this).attr('off', true)
+										}
+									})
+
+								})
+
+					}
+		  },
 
 				methods: {
-					getGoods: function(event) {
-						event.stopPropagation();
+
+					findByEvent:function(event,id){
+
+						this.categoryLevel={event: event==1? "categorylevel1id": event==2? "categorylevel2id":"categorylevel3id" , id: id};
+						this.pageinfomethods(null,null,this.categoryLevel)
 					},
-					pageinfomethod :function(obj){
+
+					pageinfomethod :function(obj,first){
+
 						var curr=1;
 						if (obj!=null){
 							curr=JSON.stringify(obj.curr);
 						}
-						this.$http.post(urlprofix+"/consumer/goods/get?currentPage="+curr,"", {
+						var  reqeustData = "?currentPage="+curr
+						if(this.categoryLevel!= undefined)
+						{
+							reqeustData+="&";
+							reqeustData+=this.categoryLevel.event;
+							reqeustData+="=";
+							reqeustData+=this.categoryLevel.id;
+
+						}
+						this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
 							emulateJSON: true
 						}).then(function (result){
+							const  tot =result.body.total;
 							this.pagetotal=JSON.stringify(result.body.total);
 							this.pageinfo=result.body;
+
 							this.goodlist= result.body.list;
+
+								this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
+									emulateJSON: true
+								}).then(function (result){
+									const  tot =result.body.total;
+									this.pagetotal=JSON.stringify(result.body.total);
+									this.pageinfo=result.body;
+
+									this.goodlist= result.body.list;
+
+								},function(){
+
+
+								})
+						},function(){
+
+
+						})
+					},
+					pageinfomethods :function(obj,first){
+
+						var curr=1;
+						if (obj!=null){
+							curr=JSON.stringify(obj.curr);
+						}
+						var  reqeustData = "?currentPage="+curr
+						if(this.categoryLevel!= undefined)
+						{
+							reqeustData+="&";
+							reqeustData+=this.categoryLevel.event;
+							reqeustData+="=";
+							reqeustData+=this.categoryLevel.id;
+
+						}
+						this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
+							emulateJSON: true
+						}).then(function (result){
+							const  tot =result.body.total;
+							this.pagetotal=JSON.stringify(result.body.total);
+							this.pageinfo=result.body;
+
+							this.goodlist= result.body.list;
+
+							this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
+								emulateJSON: true
+							}).then(function (result){
+								const  tot =result.body.total;
+								this.pagetotal=JSON.stringify(result.body.total);
+								this.pageinfo=result.body;
+
+								this.goodlist= result.body.list;
+								this.boo=!this.boo;
+							},function(){
+
+
+							})
 						},function(){
 
 

@@ -6,6 +6,9 @@
   <link rel="stylesheet" type="text/css" href="../res/static/css/main.css">
   <link rel="stylesheet" type="text/css" href="../res/layui/css/layui.css">
   <script type="text/javascript" src="../res/layui/layui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="../res/static/js/vue.js"></script>
+  <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 </head>
@@ -61,7 +64,7 @@
         </div>
       </div>
     </div>
-    <div class="data-cont-wrap w1200">
+    <div class="data-cont-wrap w1200" id="app">
       <div class="crumb">
         <a href="javascript:;">首页</a>
         <span>></span>
@@ -69,23 +72,25 @@
         <span>></span>
         <a href="javascript:;">产品详情</a>
       </div>
-      <div class="product-intro layui-clear">
+      <div class="product-intro layui-clear" v-for="(item , index) in goodlist">
         <div class="preview-wrap">
-          <a href="javascript:;"><img src="../res/static/img/details_img1.jpg"></a>
+          <a href="javascript:;"><img :src="'../res/static/img/'+item.photo"></a>
         </div>
         <div class="itemInfo-wrap">
           <div class="itemInfo">
             <div class="title">
-              <h4>男女宝宝秋冬装套装0一1岁婴儿衣服潮加厚连体衣保暖冬季外出抱衣 </h4>
+              <h4>{{item.goodName}}</h4>
               <span><i class="layui-icon layui-icon-rate-solid"></i>收藏</span>
             </div>
             <div class="summary">
-              <p class="reference"><span>参考价</span> <del>￥280.00</del></p>
-              <p class="activity"><span>活动价</span><strong class="price"><i>￥</i>99.00</strong></p>
-              <p class="address-box"><span>送&nbsp;&nbsp;&nbsp;&nbsp;至</span><strong class="address">江西&nbsp;&nbsp;南昌&nbsp;&nbsp;东湖区</strong></p>
+              <p class="reference"><span>库存</span> <span>{{item.sum}}</span></p>
+              <p class="activity"><span>售价</span><strong class="price"><i>￥</i>{{item.price}}{{item.company}}</strong></p>
+              <p class="address-box"><span>简&nbsp;&nbsp;&nbsp;&nbsp;介</span><strong class="address">{{item.context}}</strong></p>
             </div>
             <div class="choose-attrs">
+<!--
               <div class="color layui-clear"><span class="title">颜&nbsp;&nbsp;&nbsp;&nbsp;色</span> <div class="color-cont"><span class="btn">白色</span> <span class="btn active">粉丝</span></div></div>
+-->
               <div class="number layui-clear"><span class="title">数&nbsp;&nbsp;&nbsp;&nbsp;量</span><div class="number-cont"><span class="cut btn">-</span><input onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" maxlength="4" type="" name="" value="1"><span class="add btn">+</span></div></div>
             </div>
             <div class="choose-btns">
@@ -95,7 +100,7 @@
           </div>
         </div>
       </div>
-      <div class="layui-clear">
+     <!-- <div class="layui-clear">
         <div class="aside">
           <h4>热销推荐</h4>
           <div class="item-list">
@@ -131,10 +136,45 @@
             <img src="../res/static/img/details_imgbig.jpg">
           </div>
         </div>
-      </div>
+      </div>-->
     </div>
   </div>
+  <script src="../res/static/js/publicValue.js"></script>
+<script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
 <script type="text/javascript">
+  //接收一个值
+  var vue= new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue.js!',
+      goodId:0,
+      goodlist: [{}]
+    },
+    mounted: function(){
+
+      var result;
+      var url=window.location.search; //获取url中"?"符后的字串
+      if(url.indexOf("?")!=-1){
+        result = url.substr(url.indexOf("=")+1);
+      }
+      this.goodId=result;
+
+      this.$http.post(urlprofix+'/consumer/goods/get?goodId='+ this.goodId, "", {
+        emulateJSON: true
+      }).then(function(res) {
+        this.goodlist=res.body.list;
+      }, function() {
+        console.log('请求处理失败');
+      });
+
+    },methods: {
+
+    }
+  })
+
+
+
+
   layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
   }).use(['mm','jquery'],function(){
