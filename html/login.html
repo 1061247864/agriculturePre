@@ -113,37 +113,21 @@
   <script type="text/javascript">
     document.getElementById("title").innerHTML=titleObj;
 
-/*   window.onstorage=function (e) {
-      alert(e.newValue)
-         const  userinfo= window.localStorage.getItem("userKey")
 
-      if(userinfo!=null && userinfo != '')
-      {
-        app.userobj=JSON.parse(userinfo);
-        alert("检测到本地存储，赋值到vue变量")
-      }
-
-    }*/
       var app = new Vue({
           el: "#app",
           data:{
             userobj: {},
           },
+
         mounted:function(){
-            this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
+
+
+           this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
 
 
         },
         watch:{
-          userobj:function () {
-            if(!this.userobj)
-            {
-            }else
-            {
-
-            }
-
-          }
 
         },
         created:function(){
@@ -156,13 +140,29 @@
         },
 
           methods:{
+              gerCurrentUser:function(){
+                  this.$http.post(urlprofix+"/consumer/user/getcurrentuser",{userCode: userCode , password : password},{
+                      emulateJSON:true
+                  }).then(function(result){
+                      if(result.body){
+                          alert(result.body.userCode)
+                      }else
+                      {
+
+                      }
+                  })
+
+              },
+
             logout:function(){
-              window.localStorage.removeItem("userKey")
-              this.userobj=null;
-              layer.msg("退出登录！",{
-                icon:7,
-                time:2000
-              })
+                layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
+                    window.localStorage.removeItem("userKey")
+                    this.userobj=null;
+                    layer.msg("退出登录！",{
+                        icon:7,
+                        time:2000
+                    })
+                })
             },
               tologin: function(){
                  const userCode = window.document.getElementById("userCode").value.trim();
@@ -197,6 +197,7 @@
                             },function(){
                               document.getElementById("userCode").value="";
                               document.getElementById("password").value="";
+                              window.location.href="../html/index.html";
                             })
                           }
                       },function(){
@@ -273,6 +274,7 @@
         }
         */
     })
+
   </script>
 
 </body>

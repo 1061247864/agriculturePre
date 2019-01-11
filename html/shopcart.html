@@ -10,18 +10,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 </head>
 <body>
+<div id="app">
+  <div id="title">
 
-  <div class="site-nav-bg">
-    <div class="site-nav w1200">
-      <p class="sn-back-home">
-        <i class="layui-icon layui-icon-home"></i>
-        <a href="#">首页</a>
-      </p>
-      <div class="sn-quick-menu">
-        <div class="login"><a href="login.html">登录</a></div>
-        <div class="sp-cart"><a href="shopcart.html">购物车</a><span>2</span></div>
-      </div>
-    </div>
   </div>
 
 
@@ -107,7 +98,7 @@
             <li class="th th-chk">
               <div class="select-all">
                 <div class="cart-checkbox">
-                  <input class="CheckBoxShop check" id="" type="checkbox" num="all" name="select-all" value="true">
+                  <input class="CheckBoxShop check" id="a" type="checkbox" num="all" name="select-all" value="true">
                 </div>
               </div>
             </li>
@@ -271,8 +262,35 @@
       </div>
     </div>
   </div>
-
+</div>
+<script src="../res/static/js/publicValue.js"></script>
+<script src="../res/static/js/vue.js"></script>
 <script type="text/javascript">
+
+document.getElementById("title").innerHTML=titleObj;
+  var app = new Vue({
+    el:"#app",
+    data:{
+      userobj:{}
+    },
+    mounted:function(){
+
+      this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
+    },
+    methods:{
+
+      logout:function(){
+        layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
+          window.localStorage.removeItem("userKey")
+          this.userobj=null;
+          layer.msg("退出登录！",{
+            icon:7,
+            time:2000
+          })
+        })
+      }
+    }
+  });
   layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
   }).use(['mm','jquery','element','car'],function(){

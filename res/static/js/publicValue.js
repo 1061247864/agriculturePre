@@ -6,7 +6,7 @@ var titleObj ="<div class=\"site-nav-bg\"  id=\"apps\">\n" +
     "    <div class=\"site-nav w1200\">\n" +
     "        <p class=\"sn-back-home\">\n" +
     "            <i class=\"layui-icon layui-icon-home\"></i>\n" +
-    "            <a href=\"javascript:void(0)\"  >首页</a>\n" +
+    "            <a href=\"index.html\"  >首页</a>\n" +
     "        </p>\n" +
     "        <div class=\"sn-quick-menu\">\n" +
     "            <div class=\"login\"  v-if='!userobj'><a href=\"login.html\">登录</a></div>\n" +
