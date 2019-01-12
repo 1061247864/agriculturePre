@@ -13,18 +13,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 </head>
 <body>
+<div id="app">
+  <div  id="title">
 
-  <div class="site-nav-bg">
-    <div class="site-nav w1200">
-      <p class="sn-back-home">
-        <i class="layui-icon layui-icon-home"></i>
-        <a href="#">首页</a>
-      </p>
-      <div class="sn-quick-menu">
-       <div class="login"><a href="login.html">登录</a></div>
-        <div class="sp-cart"><a href="shopcart.html">购物车</a><span>2</span></div>
-      </div>
-    </div>
   </div>
 
 
@@ -64,7 +55,7 @@
         </div>
       </div>
     </div>
-    <div class="data-cont-wrap w1200" id="app">
+    <div class="data-cont-wrap w1200">
       <div class="crumb">
         <a href="javascript:;">首页</a>
         <span>></span>
@@ -91,11 +82,11 @@
 <!--
               <div class="color layui-clear"><span class="title">颜&nbsp;&nbsp;&nbsp;&nbsp;色</span> <div class="color-cont"><span class="btn">白色</span> <span class="btn active">粉丝</span></div></div>
 -->
-              <div class="number layui-clear"><span class="title">数&nbsp;&nbsp;&nbsp;&nbsp;量</span><div class="number-cont"><span class="cut btn">-</span><input onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" maxlength="4" type="" name="" value="1"><span class="add btn">+</span></div></div>
+              <div class="number layui-clear"><span class="title">数&nbsp;&nbsp;&nbsp;&nbsp;量</span><div class="number-cont"><span class="cut btn">-</span><input onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" maxlength="4" type="" name="count" value="1"><span class="add btn">+</span></div></div>
             </div>
             <div class="choose-btns">
               <button class="layui-btn layui-btn-primary purchase-btn">立刻购买</button>
-              <button class="layui-btn  layui-btn-danger car-btn"><i class="layui-icon layui-icon-cart-simple"></i>加入购物车</button>  
+              <button class="layui-btn  layui-btn-danger car-btn" @click="addCar(item.price,item.goodId)"><i class="layui-icon layui-icon-cart-simple"></i>加入购物车</button>
             </div>
           </div>
         </div>
@@ -139,18 +130,24 @@
       </div>-->
     </div>
   </div>
+</div>
   <script src="../res/static/js/publicValue.js"></script>
 <script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
 <script type="text/javascript">
   //接收一个值
+  document.getElementById("title").innerHTML=titleObj;
   var vue= new Vue({
     el: '#app',
     data: {
       message: 'Hello Vue.js!',
       goodId:0,
-      goodlist: [{}]
+      goodlist: [{}],
+      userobj:{},
+      shopCart:{}
     },
     mounted: function(){
+
+      this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
 
       var result;
       var url=window.location.search; //获取url中"?"符后的字串
@@ -168,7 +165,37 @@
       });
 
     },methods: {
-
+      addCar:function (price,good) {
+        alert(JSON.stringify(this.shopCart));
+        alert(this.shopCart.priceCount);
+        alert(this.shopCart.shopcId);
+        var scid = null;
+        var priceTotal = 0;
+        if (this.shopCart.priceCount==undefined){
+          priceTotal = price*$("[name=count]").val();
+        }else{
+          priceTotal = parseInt(this.shopCart.priceCount)+(price*$("[name=count]").val());
+        }
+        if (this.shopCart.shopcId!=undefined){
+          scid = this.shopCart.shopcId;
+        }
+        alert(scid);
+        alert(priceTotal);
+        this.$http.post(urlprofix+"/consumer/shopCart/addShopCart",
+                {shopcId:scid,priceCount:priceTotal,goodId:good,count:$("[name=count]").val()}, {
+          emulateJSON: true
+        }).then(function(res) {
+          this.shopCart=res.body;
+          alert(JSON.stringify(this.shopCart));
+          /*if (this.shopCart.shopcId>0){
+            alert("添加成功！");
+          }else{
+            alert("失败");
+          }*/
+        }, function() {
+          console.log('请求处理失败');
+        });
+      }
     }
   })
 
