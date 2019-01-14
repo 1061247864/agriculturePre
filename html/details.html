@@ -147,6 +147,9 @@
     mounted: function(){
 
       this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
+      /*if(this.userobj){
+        this.gerCurrentUser();
+      }*/
 
       var result;
       var url=window.location.search; //获取url中"?"符后的字串
@@ -164,6 +167,18 @@
       });
 
     },methods: {
+      /*gerCurrentUser:function(){
+        /!*this.$http.options={withCredentials: true}*!/
+        this.$http.get(urlprofix+"consumer/user/getCurrentUser",{credentials: true},{
+          emulateJSON:true
+        }).then(function(result){
+          if(!result.body){
+            this.userobj=null;
+            window.localStorage.removeItem("userKey")
+          }
+        })
+
+      },*/
       addCar:function (price,good) {
         var scid = null;
         var shopCart = {};
