@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="Access-Control-Allow-Origin" content="*">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../res/static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../res/layui/css/layui.css">
+    <script type="text/javascript" src="../res/layui/layui.js"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <script src="../res/static/js/vue.js"></script>
+    <script src="../res/static/js/jquery.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <div id="title">
+
+
+    </div>
+
+
+    <div class="header" style="background-color: #DDDDDD;">
+        <div class="headerLayout w1200">
+            <div class="headerCon">
+                <h1 class="mallLogo">
+                    <a href="#" title="智慧农贸">
+                        <img src="../res/static/img/logo2.png">
+                    </a>
+                </h1>
+                <div class="mallSearch">
+                    <form action="" class="layui-form" novalidate>
+                        <input type="text" name="title" required lay-verify="required" autocomplete="off"
+                               class="layui-input" placeholder="请输入需要的商品">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">
+                            <i class="layui-icon layui-icon-search"></i>
+                        </button>
+                        <input type="hidden" name="" value="">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="content content-nav-base  login-content">
+        <div class="main-nav">
+            <div class="inner-cont0">
+                <div class="inner-cont1 w1200">
+                    <div class="inner-cont2">
+                        <a href="commodity.html" class="active">所有商品</a>
+                        <a href="buytoday.html">今日团购</a>
+                        <a href="information.html">母婴资讯</a>
+                        <a href="about.html">关于我们</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="login-bg">
+            <div class="login-cont w1200">
+                <div class="form-box">
+
+                    <legend>用户注册</legend>
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline veri-code">
+                            <input type="tel" name="userCode" id="userCode" lay-verify="required" placeholder="用户名"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline veri-code">
+                            <div class="layui-input-inline">
+                                <input id="password" type="text" name="password" lay-verify="required" placeholder="密码"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline veri-code">
+                            <div class="layui-input-inline">
+                                <input id="password2" type="text" name="password2" lay-verify="required"
+                                       placeholder="确认密码" @blur="validataPassword2" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline veri-code">
+                            <div class="layui-input-inline">
+                                <input id="email" type="text" name="email" lay-verify="required" placeholder="邮箱"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline veri-code">
+                            <div class="layui-input-inline">
+                                <input id="userName" type="text" name="userName" lay-verify="required"
+                                       placeholder="真实姓名" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline veri-code">
+                            <div class="layui-input-inline">
+                                性别: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" name="sex" lay-verify="required"
+                                                                          value="1" autocomplete="off" checked
+                                                                          class="layui-radio-disbaled">
+
+                                男 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" name="sex" lay-verify="required"
+                                                                        autocomplete="off" value="0"
+                                                                        class="layui-radio-disbaled"> 女
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="layui-form-item login-btn">
+                        <div class="layui-input-block">
+                            <input type="button" class="layui-btn" lay-submit="" lay-filter="demo1"
+                                   style="width: 300px;" @click="registry" value="注册"></input>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <input>
+    <div class="footer">
+        <div class="ng-promise-box">
+            <div class="ng-promise w1200">
+                <p class="text">
+                    <a class="icon1" href="javascript:;">7天无理由退换货</a>
+                    <a class="icon2" href="javascript:;">满99元全场免邮</a>
+                    <a class="icon3" style="margin-right: 0" href="javascript:;">100%品质保证</a>
+                </p>
+            </div>
+        </div>
+        <div class="mod_help w1200">
+            <p>
+                <a href="javascript:;">关于我们</a>
+                <span>|</span>
+                <a href="javascript:;">帮助中心</a>
+                <span>|</span>
+                <a href="javascript:;">售后服务</a>
+                <span>|</span>
+                <a href="javascript:;">母婴资讯</a>
+                <span>|</span>
+                <a href="javascript:;">关于货源</a>
+            </p>
+            <p class="coty">母婴商城版权所有 &copy; 2012-2020</p>
+        </div>
+    </div>
+</div>
+<script src="../res/static/js/publicValue.js"></script>
+<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+<script type="text/javascript">
+    document.getElementById("title").innerHTML = titleObj;
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            userobj: {},
+        },
+
+        mounted: function () {
+
+
+            this.userobj = JSON.parse(window.localStorage.getItem("userKey"));
+            if (this.userobj) {
+                this.gerCurrentUser();
+            }
+
+        },
+        watch: {},
+        created: function () {
+
+
+        },
+        computed: {},
+
+        methods: {
+            registry: function () {
+
+
+                if (this.registryValidata()) {
+                    const userCode = jQuery("#userCode").val();
+                    const email = jQuery("#email").val();
+                    this.$http.post(urlprofix + "userv/user/isExistence", {userCode: userCode, email: email}, {
+                        emulateJSON: true
+                    }).then(function (result) {
+                        if (result.body.message) {
+                            layer.msg(result.body.message, {
+                                icon: 2
+                            })
+                        } else {
+                            var data = jQuery(".layui-form-item input[name]").serializeArray();
+                            var dataJson = {};
+                            for (const i in data) {
+                                dataJson[data[i].name] = data[i].value;
+                            }
+                            this.$http.post(urlprofix + "consumer/user/registry", dataJson, {
+                                emulateJSON: true,
+                                withCredentials: true
+                            }).then(function (result) {
+                                layer.msg(result.body.message, {
+                                    icon: result.body.isregistry == "false" ? 2 : 1
+                                }, function () {
+                                    if (result.body.isregistry == "true") {
+                                        window.location.href = "login.html"
+                                    }
+                                })
+                            })
+                        }
+                    })
+
+
+                }
+            }
+            ,
+            validataPassword2: function () {
+                if (jQuery("#password2").val() != jQuery("#password").val()) {
+                    layer.msg("密码不一致", {
+                        icon: 2
+                    });
+                }
+            },
+            validata: function () {
+
+            }
+            ,
+            registryValidata: function () {
+
+                var bool = true;
+                jQuery(".layui-form-item input[name]").each(function () {
+                    if (jQuery(this).val() == null || jQuery(this).val() == '') {
+                        layer.msg(jQuery(this).attr("placeholder") + "不能为空！")
+                        bool = false;
+                        return bool;
+                    }
+
+
+                })
+                if (bool) {
+                    this.validataPassword2();
+                }
+                if (bool) {
+                    const emailReg = /^[0-9a-zA-Z]{6,18}@((qq)|(163)|(sina)|(gmail))((.com)|(.cn))$/;
+                    const email = jQuery("#email").val();
+
+                    if (!emailReg.test(email)) {
+                        layer.msg("邮箱格式不正确[格式 ：{6-18@host(.com|.cn)]", {
+                            icon: 2
+                        })
+                        bool = false;
+                    }
+                }
+                return bool;
+            }
+            ,
+            gerCurrentUser: function () {
+                /*this.$http.options={withCredentials: true}*/
+                this.$http.get(urlprofix + "consumer/user/getCurrentUser", {credentials: true}, {
+                    emulateJSON: true
+                }).then(function (result) {
+                    if (!result.body) {
+                        this.userobj = null;
+                        window.localStorage.removeItem("userKey")
+                    }
+                })
+            },
+
+            logout: function () {
+                layer.confirm(this.userobj.userName + ":是否退出登录", {btn: ['确定', '取消'], title: "提示"}, () => {
+                    window.localStorage.removeItem("userKey")
+                    this.userobj = null;
+                    layer.msg("退出登录！", {
+                        icon: 7,
+                        time: 2000
+                    })
+                })
+            },
+
+
+        }
+    })
+
+    app.vtitleObj = titleObj;
+
+
+    layui.config({
+        base: '../res/static/js/util' //你存放新模块的目录，注意，不是layui的模块目录
+    }).use(['jquery', 'form'], function () {
+        var $ = layui.$, form = layui.form;
+
+        /*
+                $("#find").click(function() {
+                    if(!/^1\d{10}$/.test($("#phone").val())){
+                      layer.msg("请输入正确的手机号");
+                      return false;
+                    }
+                    var obj=this;
+                    $.ajax({
+                        type:"get",
+                        url:"../json/login.json",
+                        dataType:"json",//返回的
+                        success:function(data) {
+
+                            if(data.result){
+                                $("#find").addClass(" layui-btn-disabled");
+                                $('#find').attr('disabled',"true");
+                                settime(obj);
+                                $("#msg").text(data.msg);
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        },
+                        error:function(msg) {
+                            console.log(msg);
+                        }
+                    });
+                })
+                var countdown=60;
+                function settime(obj) {
+                if (countdown == 0) {
+                    obj.removeAttribute("disabled");
+                    obj.classList.remove("layui-btn-disabled")
+                    obj.value="获取验证码";
+                    countdown = 60;
+                    return;
+                } else {
+
+                    obj.value="重新发送(" + countdown + ")";
+                    countdown--;
+                }
+                setTimeout(function() {
+                    settime(obj) }
+                    ,1000)
+                }
+                */
+    })
+
+</script>
+
+</body>
+</html>
