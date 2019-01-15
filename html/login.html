@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div class="login-bg">
+    <div class="login-bg" >
       <div class="login-cont w1200">
         <div class="form-box">
 
@@ -181,7 +181,7 @@
                       })
                   }else {
                       this.$http.options={withCredentials: true}
-                      this.$http.post(urlprofix+"/consumer/user/dologin",{userCode: userCode , password : password,credentials: true},{
+                      this.$http.post(urlprofix+"/consumer/user/dologin",{userCode: userCode , password : password/*,credentials: true*/},{
                           emulateJSON:true,
                           withCredentials: true
                       }).then(function(result){
@@ -201,7 +201,7 @@
                             },function(){
                               document.getElementById("userCode").value="";
                               document.getElementById("password").value="";
-                          /*    window.location.href="../html/index.html";*/
+                             window.location.href="../html/index.html";
                             })
                           }
                       },function(){
