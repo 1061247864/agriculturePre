@@ -159,7 +159,7 @@
       this.goodId=result;
 
       this.$http.post(urlprofix+'/consumer/goods/get?goodId='+ this.goodId, "", {
-        emulateJSON: true
+        emulateJSON: true,withCredentials: true
       }).then(function(res) {
         this.goodlist=res.body.list;
       }, function() {
@@ -167,6 +167,16 @@
       });
 
     },methods: {
+      logout:function(){
+        layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
+          window.localStorage.removeItem("userKey")
+          this.userobj=null;
+          layer.msg("退出登录！",{
+            icon:7,
+            time:2000
+          })
+        })
+      },
       /*gerCurrentUser:function(){
         /!*this.$http.options={withCredentials: true}*!/
         this.$http.get(urlprofix+"consumer/user/getCurrentUser",{credentials: true},{
@@ -195,10 +205,13 @@
         }
         this.$http.post(urlprofix+"/consumer/shopCart/addShopCart",
                 {shopcId:scid,priceCount:priceTotal,goodId:good,count:$("[name=count]").val()}, {
-                  emulateJSON: true
+                  emulateJSON: true,
+                  withCredentials: true
                 }).then(function(res) {
           if (res.body.shopcId>0){
-            alert("添加成功！");
+            layer.msg("添加成功！",{
+              icon:1
+            })
             window.localStorage.removeItem("scid");
             window.localStorage.setItem("scid",JSON.stringify(res.body))
           }else{
@@ -213,11 +226,12 @@
 
 
 
-
+var layer;
   layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
-  }).use(['mm','jquery'],function(){
+  }).use(['mm','jquery','layer'],function(){
     var mm = layui.mm,$ = layui.$;
+    layer =layui.layer;
     var cur = $('.number-cont input').val();
     $('.number-cont .btn').on('click',function(){
       if($(this).hasClass('add')){
