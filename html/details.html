@@ -142,12 +142,14 @@
       message: 'Hello Vue.js!',
       goodId:0,
       goodlist: [{}],
-      userobj:{},
-      shopCart:{}
+      userobj:{}
     },
     mounted: function(){
 
       this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
+      /*if(this.userobj){
+        this.gerCurrentUser();
+      }*/
 
       var result;
       var url=window.location.search; //获取url中"?"符后的字串
@@ -165,33 +167,43 @@
       });
 
     },methods: {
+      /*gerCurrentUser:function(){
+        /!*this.$http.options={withCredentials: true}*!/
+        this.$http.get(urlprofix+"consumer/user/getCurrentUser",{credentials: true},{
+          emulateJSON:true
+        }).then(function(result){
+          if(!result.body){
+            this.userobj=null;
+            window.localStorage.removeItem("userKey")
+          }
+        })
+
+      },*/
       addCar:function (price,good) {
-        alert(JSON.stringify(this.shopCart));
-        alert(this.shopCart.priceCount);
-        alert(this.shopCart.shopcId);
         var scid = null;
+        var shopCart = {};
+        if ((JSON.parse(window.localStorage.getItem("scid")))!=null){
+          scid = (JSON.parse(window.localStorage.getItem("scid"))).shopcId;
+          shopCart = JSON.parse(window.localStorage.getItem("scid"));
+        }
+
         var priceTotal = 0;
-        if (this.shopCart.priceCount==undefined){
+        if (shopCart.priceCount==undefined){
           priceTotal = price*$("[name=count]").val();
         }else{
-          priceTotal = parseInt(this.shopCart.priceCount)+(price*$("[name=count]").val());
+          priceTotal = parseInt(shopCart.priceCount)+(price*$("[name=count]").val());
         }
-        if (this.shopCart.shopcId!=undefined){
-          scid = this.shopCart.shopcId;
-        }
-        alert(scid);
-        alert(priceTotal);
         this.$http.post(urlprofix+"/consumer/shopCart/addShopCart",
                 {shopcId:scid,priceCount:priceTotal,goodId:good,count:$("[name=count]").val()}, {
-          emulateJSON: true
-        }).then(function(res) {
-          this.shopCart=res.body;
-          alert(JSON.stringify(this.shopCart));
-          /*if (this.shopCart.shopcId>0){
+                  emulateJSON: true
+                }).then(function(res) {
+          if (res.body.shopcId>0){
             alert("添加成功！");
+            window.localStorage.removeItem("scid");
+            window.localStorage.setItem("scid",JSON.stringify(res.body))
           }else{
             alert("失败");
-          }*/
+          }
         }, function() {
           console.log('请求处理失败');
         });
@@ -205,19 +217,19 @@
   layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
   }).use(['mm','jquery'],function(){
-      var mm = layui.mm,$ = layui.$;
-      var cur = $('.number-cont input').val();
-      $('.number-cont .btn').on('click',function(){
-        if($(this).hasClass('add')){
-          cur++;
+    var mm = layui.mm,$ = layui.$;
+    var cur = $('.number-cont input').val();
+    $('.number-cont .btn').on('click',function(){
+      if($(this).hasClass('add')){
+        cur++;
          
-        }else{
-          if(cur > 1){
-            cur--;
-          }  
+      }else{
+        if(cur > 1){
+          cur--;
         }
-        $('.number-cont input').val(cur)
-      })
+      }
+      $('.number-cont input').val(cur)
+    })
       
   });
 </script>
