@@ -259,7 +259,7 @@
           <span @click.stop="delShopcItem(null)">批量删除</span>
         </div>
         <div class="th Settlement">
-          <button class="layui-btn">结算</button>
+          <button class="layui-btn" @click="createOrder()">结算</button>
         </div>
         <div class="th total">
           <p>应付：<span class="pieces-total">0</span></p>
@@ -270,7 +270,7 @@
 </div>
 <script src="../res/static/js/publicValue.js"></script>
 <script type="text/javascript">
-  layui.config({
+/*  layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
   }).use(['mm','jquery','element','car'],function(){
     var mm = layui.mm,$ = layui.$,element = layui.element,car = layui.car;
@@ -293,7 +293,7 @@
     car.init()
 
 
-  });
+  });*/
 
 document.getElementById("title").innerHTML=titleObj;
   var app = new Vue({
@@ -302,9 +302,21 @@ document.getElementById("title").innerHTML=titleObj;
 
       userobj:{},
       shopCart:[],
-      flag:true
+      flag:true,
+      mm: layui.mm,
+      $: layui.$,
+      element:layui.element,
+      car : layui.car
     },
     mounted:function(){
+      layui.config({
+        base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+      }).use(['mm','jquery','element','car'],function(){
+
+        this.car.init()
+
+
+      });
      // app.prototype.$http=require('axios');
       this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
       if (this.userobj) {
@@ -334,10 +346,11 @@ document.getElementById("title").innerHTML=titleObj;
 
       updCart:function(itemId,flag,index){
         if(flag=='false'){
+          var updPrice = parseInt(this.shopCart.priceCount)+parseInt(this.shopCart.shopcItem[index].goods.price);
           this.shopCart.shopcItem[index].count= this.shopCart.shopcItem[index].count+1;
 
           this.$http.post(urlprofix + '/consumer/shopCart/updShopcItem?shopcitemId='+itemId+"&count="
-                  +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId, "", {
+                  +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId+"&countPrice="+updPrice, "", {
             emulateJSON: true
           }).then(function (res) {
             this.shopCart = res.body;
@@ -348,10 +361,10 @@ document.getElementById("title").innerHTML=titleObj;
 
         }else{
           if (this.shopCart.shopcItem[index].count-1!=0) {
-
+            var updPrice =this.shopCart.priceCount-this.shopCart.shopcItem[index].goods.price;
             this.shopCart.shopcItem[index].count= this.shopCart.shopcItem[index].count-1;
             this.$http.post(urlprofix + '/consumer/shopCart/updShopcItem?shopcitemId='+itemId+"&count="
-                    +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId, "", {
+                    +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId+"&countPrice="+updPrice, "", {
               emulateJSON: true
             }).then(function (res) {
               this.shopCart = res.body;
@@ -383,6 +396,8 @@ document.getElementById("title").innerHTML=titleObj;
               window.localStorage.setItem("scid", JSON.stringify(this.shopCart));
               layer.msg("删除成功！",{
                 icon:1
+              },function(){
+                window.location.reload();
               });
             }else{
               window.localStorage.removeItem("scid");
@@ -390,12 +405,78 @@ document.getElementById("title").innerHTML=titleObj;
               this.flag=false;
               layer.msg("删除成功！",{
                 icon:1
+              },function(){
+                window.location.reload();
               });
             }
           }, function () {
             console.log('请求处理失败');
           });
         })
+      },createOrder:function(){
+        if ((JSON.parse(window.localStorage.getItem("order")))==null){
+          var shocId = this.shopCart.shopcId;
+          this.$http.post(urlprofix + '/consumer/order/createOrderByShopCart?shopcId='+shocId,"", {
+            emulateJSON: true
+          }).then(function (res) {
+            window.localStorage.setItem("order", JSON.stringify(res.body));
+            layer.open({
+              type: 2 //此处以iframe举例
+              ,title: '订单'
+              ,area: ['1220px', '600px']
+              ,shade: 0.3
+              ,maxmin: true
+              ,/*offset: [ //为了演示，随机坐标
+            Math.random()*($(window).height()-300)
+            ,Math.random()*($(window).width()-390)
+          ]
+          ,*/content: 'order.html'
+              ,btn: [/*'继续弹出',*/ '全部关闭'] //只是为了演示
+              ,yes: function(){
+                //$(that).click();
+                layer.closeAll();
+              }/*
+          ,btn2: function(){
+            layer.closeAll();
+          }*/
+
+              ,zIndex: layer.zIndex //重点1
+              ,success: function(layero){
+                layer.setTop(layero); //重点2
+              }
+            });
+          }, function () {
+            console.log('请求处理失败');
+          });
+        }else{
+          layer.open({
+            type: 2 //此处以iframe举例
+            ,title: '订单'
+            ,area: ['1220px', '600px']
+            ,shade: 0.3
+            ,maxmin: true
+            ,/*offset: [ //为了演示，随机坐标
+            Math.random()*($(window).height()-300)
+            ,Math.random()*($(window).width()-390)
+          ]
+          ,*/content: 'order.html'
+            ,btn: [/*'继续弹出',*/ '全部关闭'] //只是为了演示
+            ,yes: function(){
+              //$(that).click();
+              layer.closeAll();
+            }/*
+          ,btn2: function(){
+            layer.closeAll();
+          }*/
+
+            ,zIndex: layer.zIndex //重点1
+            ,success: function(layero){
+              layer.setTop(layero); //重点2
+            }
+          });
+        }
+        //多窗口模式，层叠置顶
+
       },
       logout:function(){
         layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{

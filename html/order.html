@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="../res/static/js/vue.js"></script>
+  <script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../res/static/css/main.css">
+  <link rel="stylesheet" type="text/css" href="../res/layui/css/layui.css">
+  <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+  <script type="text/javascript" src="../res/layui/layui.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+</head>
+<body>
+<div id="app">
+
+
+
+
+
+  <div class="content content-nav-base shopcart-content">
+    <div class="cart w1200">
+      <div class="cart-table-th">
+        <div class="th th-chk">
+          <div class="select-all">
+            <div class="cart-checkbox">
+            </div>
+          </div>
+        </div>
+        <div class="th th-item">
+          <div class="th-inner">
+            商品
+          </div>
+        </div>
+        <div class="th th-price">
+          <div class="th-inner">
+            单价
+          </div>
+        </div>
+        <div class="th th-amount">
+          <div class="th-inner">
+            数量
+          </div>
+        </div>
+        <div class="th th-sum">
+          <div class="th-inner">
+            小计
+          </div>
+        </div>
+      </div>
+      <div class="OrderList">
+        <div class="order-content" id="list-cont">
+          <ul class="item-content layui-clear"  v-for="(item , index) in order.orderItemList">
+            <li class="th th-chk">
+              <div class="select-all">
+                <div class="cart-checkbox">
+                  <input type="hidden" :value="item.shopcitemId"/>
+                </div>
+              </div>
+            </li>
+            <li class="th th-item">
+              <div class="item-cont">
+                <a href="javascript:;"><img :src="'../res/static/img/'+item.goods.photo" alt=""></a>
+                <div class="text">
+                  <div class="title">{{item.goods.goodName}}</div>
+                  <p>{{item.goods.context}}</p>
+                </div>
+              </div>
+            </li>
+            <li class="th th-price">
+              <span class="th-su">{{item.goods.price}} {{item.goods.company}}</span>
+            </li>
+            <li class="th th-amount">`
+              <div class="box-btn layui-clear">
+                {{item.goodNumber}}
+              </div>
+            </li>
+            <li class="th th-sum">
+              <span class="sum">{{item.goods.price*item.goodNumber}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+
+
+
+      <div class="FloatBarHolder layui-clear">
+        <div class="th th-chk">
+          <div class="select-all">
+            <div class="cart-checkbox">
+              收货地址
+            </div>
+          </div>
+        </div>
+        <div class="th batch-deletion">
+          <input id="address" type="text"/>
+        </div>
+        <div class="th Settlement">
+          <button class="layui-btn" @click="pay()">支付</button>
+        </div>
+        <div class="th total">
+          <p>应付：<span class="pieces-total">{{order.countPrice}}</span>元</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../res/static/js/publicValue.js"></script>
+<script type="text/javascript">
+/*  layui.config({
+    base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+  }).use(['mm','jquery','element','car'],function(){
+    var mm = layui.mm,$ = layui.$,element = layui.element,car = layui.car;
+
+    // 模版导入数据
+    // var html = demo.innerHTML,
+    // listCont = document.getElementById('list-cont');
+    // mm.request({
+    //   url: '../json/shopcart.json',
+    //   success : function(res){
+    //     listCont.innerHTML = mm.renderHtml(html,res)
+    //     element.render();
+    //     car.init()
+    //   },
+    //   error: function(res){
+    //     console.log(res);
+    //   }
+    // })
+    //
+    car.init()
+
+
+  });*/
+
+  var app = new Vue({
+    el:"#app",
+    data:{
+      order:[],
+      mm: layui.mm,
+      $: layui.$,
+      element:layui.element,
+      car : layui.car
+    },
+    mounted:function(){
+      layui.config({
+        base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+      }).use(['mm','jquery','element','car'],function(){
+
+        this.car.init()
+      });
+      this.order=JSON.parse(window.localStorage.getItem("order"));
+    },
+    methods: {
+      pay:function () {
+        this.$http.get(urlprofix+"consumer/order/updOrder?orderId="+this.order.orderId+"&address="+$("#address").val(),{credentials: true},{
+          emulateJSON:true
+        }).then(function(result){
+        });
+      }
+    }
+  });
+
+
+
+</script>
+</body>
+</html>
