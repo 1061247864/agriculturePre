@@ -67,7 +67,7 @@
                 </div>
               <div class="layui-inline veri-code">
                 <div class="layui-input-inline">
-                  <input id="password" type="text" name="pnum" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+                  <input id="password" type="password" name="pnum" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
                 </div>
               </div>
             </div>
@@ -113,6 +113,19 @@
   <script type="text/javascript">
     document.getElementById("title").innerHTML=titleObj;
 
+    Vue.http.interceptors.push((request, next) => {
+        if(request.method=='POST'){
+          request.withCredentials=true;
+        }else{
+         request.body.credentials=true;;
+      }
+        next((response) => {
+           if(response.status==301){
+             alert("用户未登录")
+             window.location.href="login.html";
+           }
+        })
+    })
 
       var app = new Vue({
           el: "#app",
@@ -183,7 +196,6 @@
                       this.$http.options={withCredentials: true}
                       this.$http.post(urlprofix+"/consumer/user/dologin",{userCode: userCode , password : password/*,credentials: true*/},{
                           emulateJSON:true,
-                          withCredentials: true
                       }).then(function(result){
                           console.log(result.body.message)
                           if (result.body.message){
@@ -224,7 +236,12 @@
 
       app.vtitleObj=titleObj;
 
-
+  /*  app.$http.interceptors.push((request, next) => {
+        alert(111)
+        next(function () {
+            alert(2222)
+        })
+    });*/
 
 
    layui.config({
