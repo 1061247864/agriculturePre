@@ -236,7 +236,6 @@
         this.$http.post(urlprofix+"consumer/order/createOrderByGoodId?goodId="+goodId+"&countPrice="+countPrice+"&goodNumber="+$("#count").val(),"",{
           emulateJSON:true
         }).then(function(result){
-          alert(JSON.stringify(result.body));
           window.localStorage.setItem("orderById",JSON.stringify(result.body));
           layer.open({
             type: 2 //此处以iframe举例

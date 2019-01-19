@@ -154,11 +154,47 @@
     },
     methods: {
       pay:function () {
-        this.$http.get(urlprofix+"consumer/order/updOrder?orderId="+this.order.orderId+"&address="+$("#address").val(),{credentials: true},{
+        this.$http.post(urlprofix+"consumer/order/updOrder?orderId="+this.order.orderId+"&address="+$("#address").val(),{credentials: true},{
           emulateJSON:true
         }).then(function(result){
         });
+
+        this.$http.post(urlprofix+"/pay/topay?WIDout_trade_no=123123123&total_amount=1",{credentials: true},{
+          emulateJSON:true
+        }).then(function(result){
+          console.log(result.body);
+          layer.open({
+            type: 2 //此处以iframe举例
+            ,title: '订单'
+            ,area: ['300px', '200px']
+            ,shade: 0.3
+            ,maxmin: true
+            ,/*offset: [ //为了演示，随机坐标
+            Math.random()*($(window).height()-300)
+            ,Math.random()*($(window).width()-390)
+          ]
+          ,*/content: result.body
+            ,btn: [/*'继续弹出',*/ '全部关闭'] //只是为了演示
+            ,yes: ()=>{
+              //$(that).click();
+             /* var orderId = (JSON.parse(window.localStorage.getItem("orderById"))).orderId;
+              window.localStorage.removeItem("orderById");*/
+              layer.closeAll();
+            }/*
+          ,btn2: function(){
+            layer.closeAll();
+          }*/
+
+            ,zIndex: layer.zIndex //重点1
+            ,success: function(layero){
+              layer.setTop(layero); //重点2
+            }
+          });
+        });
+
+
       }
+
     }
   });
 
