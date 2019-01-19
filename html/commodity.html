@@ -232,7 +232,7 @@
 
 					})
 					this.$http.post(urlprofix+'/consumer//goods/gettype', "", {
-							emulateJSON: true
+							emulateJSON: true,withCredentials: true
 						}).then(function(res) {
 							this.goodssss=JSON.parse(res.bodyText);
 						}, function() {
@@ -308,7 +308,16 @@
 		  },
 
 				methods: {
-
+					logout:function(){
+						layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
+							window.localStorage.removeItem("userKey")
+							this.userobj=null;
+							layer.msg("退出登录！",{
+								icon:7,
+								time:2000
+							})
+						})
+					},
 					findByEvent:function(event,id){
 
 						this.categoryLevel={event: event==1? "categorylevel1id": event==2? "categorylevel2id":"categorylevel3id" , id: id};
@@ -331,7 +340,7 @@
 
 						}
 						this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
-							emulateJSON: true
+							emulateJSON: true,withCredentials: true
 						}).then(function (result){
 							const  tot =result.body.total;
 							this.pagetotal=JSON.stringify(result.body.total);
@@ -340,7 +349,7 @@
 							this.goodlist= result.body.list;
 
 								this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
-									emulateJSON: true
+									emulateJSON: true,withCredentials: true
 								}).then(function (result){
 									const  tot =result.body.total;
 									this.pagetotal=JSON.stringify(result.body.total);
@@ -373,7 +382,7 @@
 
 						}
 						this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
-							emulateJSON: true
+							emulateJSON: true,withCredentials: true
 						}).then(function (result){
 							const  tot =result.body.total;
 							this.pagetotal=JSON.stringify(result.body.total);
@@ -382,7 +391,7 @@
 							this.goodlist= result.body.list;
 
 							this.$http.post(urlprofix+"/consumer/goods/get"+reqeustData,"", {
-								emulateJSON: true
+								emulateJSON: true,withCredentials: true
 							}).then(function (result){
 								const  tot =result.body.total;
 								this.pagetotal=JSON.stringify(result.body.total);

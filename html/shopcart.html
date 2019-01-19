@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
+  <script src="../res/static/js/vue.js"></script>
+  <script type="text/javascript" src="../res/static/js/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../res/static/css/main.css">
   <link rel="stylesheet" type="text/css" href="../res/layui/css/layui.css">
+  <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
   <script type="text/javascript" src="../res/layui/layui.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -53,8 +56,8 @@
       </div>
     </div>
     <div class="banner-bg w1200">
-      <h3>夏季清仓</h3>
-      <p>宝宝被子、宝宝衣服3折起</p>
+     <!-- <h3>夏季清仓</h3>
+      <p>宝宝被子、宝宝衣服3折起</p>-->
     </div>
     <div class="cart w1200">
       <div class="cart-table-th">
@@ -90,45 +93,47 @@
           <div class="th-inner">
             操作
           </div>
-        </div>  
+        </div>
       </div>
       <div class="OrderList">
         <div class="order-content" id="list-cont">
-          <ul class="item-content layui-clear">
+          <ul class="item-content layui-clear" v-if="flag" v-for="(item , index) in shopCart.shopcItem">
             <li class="th th-chk">
               <div class="select-all">
                 <div class="cart-checkbox">
                   <input class="CheckBoxShop check" id="a" type="checkbox" num="all" name="select-all" value="true">
+                  <input type="hidden" :value="item.shopcitemId"/>
                 </div>
               </div>
             </li>
             <li class="th th-item">
               <div class="item-cont">
-                <a href="javascript:;"><img src="../res/static/img/paging_img1.jpg" alt=""></a>
+                <a href="javascript:;"><img :src="'../res/static/img/'+item.goods.photo" alt=""></a>
                 <div class="text">
-                  <div class="title">宝宝T恤棉质小衫</div>
-                  <p><span>粉色</span>  <span>130</span>cm</p>
+                  <div class="title">{{item.goods.goodName}}</div>
+                  <p>{{item.goods.context}}</p>
                 </div>
               </div>
             </li>
             <li class="th th-price">
-              <span class="th-su">189.00</span>
+              <span class="th-su">{{item.goods.price}} {{item.goods.company}}</span>
             </li>
-            <li class="th th-amount">
+            <li class="th th-amount">`
               <div class="box-btn layui-clear">
-                <div class="less layui-btn">-</div>
-                <input class="Quantity-input" type="" name="" value="1" disabled="disabled">
-                <div class="add layui-btn">+</div>
+                <div class="less layui-btn" @click="updCart(item.shopcitemId,'true',index)">-</div>
+                <input class="Quantity-input" type="" :id="'a'+item.shopcitemId"  :value="item.count" disabled="disabled">
+                <div class="add layui-btn" @click="updCart(item.shopcitemId,'false',index)">+</div>
               </div>
             </li>
             <li class="th th-sum">
-              <span class="sum">189.00</span>
+              <span class="sum">{{item.goods.price*item.count}}</span>
             </li>
             <li class="th th-op">
-              <span class="dele-btn">删除</span>
+              <span @click="delShopcItem(item.shopcitemId)">删除</span>
             </li>
           </ul>
-          <ul class="item-content layui-clear">
+          <h1  v-if="flag==false"  align="center">购物车中没有任何商品</h1>
+         <!-- <ul class="item-content layui-clear">
             <li class="th th-chk">
               <div class="select-all">
                 <div class="cart-checkbox">
@@ -195,7 +200,7 @@
             <li class="th th-op">
               <span class="dele-btn">删除</span>
             </li>
-          </ul>
+          </ul>-->
         </div>
       </div>
 
@@ -241,7 +246,7 @@
       </script> -->
 
 
-      <div class="FloatBarHolder layui-clear">
+      <div v-if="flag" class="FloatBarHolder layui-clear">
         <div class="th th-chk">
           <div class="select-all">
             <div class="cart-checkbox">
@@ -251,10 +256,10 @@
           </div>
         </div>
         <div class="th batch-deletion">
-          <span class="batch-dele-btn">批量删除</span>
+          <span @click.stop="delShopcItem(null)">批量删除</span>
         </div>
         <div class="th Settlement">
-          <button class="layui-btn">结算</button>
+          <button class="layui-btn" @click="createOrder()">结算</button>
         </div>
         <div class="th total">
           <p>应付：<span class="pieces-total">0</span></p>
@@ -264,40 +269,12 @@
   </div>
 </div>
 <script src="../res/static/js/publicValue.js"></script>
-<script src="../res/static/js/vue.js"></script>
 <script type="text/javascript">
-
-document.getElementById("title").innerHTML=titleObj;
-  var app = new Vue({
-    el:"#app",
-    data:{
-      userobj:{}
-    },
-    mounted:function(){
-
-      this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
-    },
-    methods:{
-
-      logout:function(){
-        layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
-          window.localStorage.removeItem("userKey")
-          this.userobj=null;
-          layer.msg("退出登录！",{
-            icon:7,
-            time:2000
-          },function (){
-            window.location.href="login.html";
-          })
-        })
-      }
-    }
-  });
-  layui.config({
+/*  layui.config({
     base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
   }).use(['mm','jquery','element','car'],function(){
     var mm = layui.mm,$ = layui.$,element = layui.element,car = layui.car;
-    
+
     // 模版导入数据
     // var html = demo.innerHTML,
     // listCont = document.getElementById('list-cont');
@@ -312,11 +289,350 @@ document.getElementById("title").innerHTML=titleObj;
     //     console.log(res);
     //   }
     // })
-    // 
+    //
     car.init()
 
 
-});
+  });*/
+
+document.getElementById("title").innerHTML=titleObj;
+  var app = new Vue({
+    el:"#app",
+    data:{
+
+      userobj:{},
+      shopCart:[],
+      flag:true,
+      mm: layui.mm,
+      $: layui.$,
+      element:layui.element,
+      car : layui.car
+    },
+    mounted:function(){
+      layui.config({
+        base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
+      }).use(['mm','jquery','element','car'],function(){
+
+        this.car.init()
+
+
+      });
+     // app.prototype.$http=require('axios');
+      this.userobj=JSON.parse(window.localStorage.getItem("userKey"));
+      if (this.userobj) {
+        this.gerCurrentUser();
+      }
+      /*if ((JSON.parse(window.localStorage.getItem("scid")))!=null){
+        this.shopCart = JSON.parse(window.localStorage.getItem("scid"));
+      }
+      alert(JSON.stringify(this.shopCart));*/
+      if ((JSON.parse(window.localStorage.getItem("scid")))!=null) {
+        this.$http.post(urlprofix + '/consumer/shopCart/getShopCartById?shopcId=' + (JSON.parse(window.localStorage.getItem("scid"))).shopcId, "", {
+          emulateJSON: true
+        }).then(function (res) {
+          this.shopCart = res.body;
+          window.localStorage.setItem("scid", JSON.stringify(this.shopCart));
+        }, function () {
+          console.log('请求处理失败');
+        });
+        //this.shopCart = JSON.parse(window.localStorage.getItem("scid"));
+
+
+      }else{
+        this.flag=false;
+      }
+    },
+    methods:{
+
+      updCart:function(itemId,flag,index){
+        if(flag=='false'){
+          var updPrice = parseInt(this.shopCart.priceCount)+parseInt(this.shopCart.shopcItem[index].goods.price);
+          this.shopCart.shopcItem[index].count= this.shopCart.shopcItem[index].count+1;
+
+          this.$http.post(urlprofix + '/consumer/shopCart/updShopcItem?shopcitemId='+itemId+"&count="
+                  +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId+"&countPrice="+updPrice, "", {
+            emulateJSON: true
+          }).then(function (res) {
+            this.shopCart = res.body;
+            window.localStorage.setItem("scid", JSON.stringify(this.shopCart));
+          }, function () {
+            console.log('请求处理失败');
+          });
+
+        }else{
+          if (this.shopCart.shopcItem[index].count-1!=0) {
+            var updPrice =this.shopCart.priceCount-this.shopCart.shopcItem[index].goods.price;
+            this.shopCart.shopcItem[index].count= this.shopCart.shopcItem[index].count-1;
+            this.$http.post(urlprofix + '/consumer/shopCart/updShopcItem?shopcitemId='+itemId+"&count="
+                    +this.shopCart.shopcItem[index].count+"&shopcId="+this.shopCart.shopcId+"&countPrice="+updPrice, "", {
+              emulateJSON: true
+            }).then(function (res) {
+              this.shopCart = res.body;
+              window.localStorage.setItem("scid", JSON.stringify(this.shopCart));
+            }, function () {
+              console.log('请求处理失败');
+            });
+
+          }
+        }
+      },
+      delShopcItem:function(shopcItemId){
+        layer.confirm("是否删除", {btn: ['确定', '取消'], title: "提示"},  () =>{
+          var shopcItem = new Array();
+         if(shopcItemId!=null){
+           shopcItem.push(shopcItemId);
+         }else{
+           //alert(jQuery("#list-cont input:checkbox:checked").serialize());
+           jQuery("#list-cont input:checkbox:checked").each(function () {
+             shopcItem.push(jQuery(this).next().val());
+           });
+         }
+
+          this.$http.post(urlprofix + '/consumer/shopCart/delCartItems?itemId='+shopcItem+"&shopcId="+this.shopCart.shopcId, "", {
+            emulateJSON: true
+          }).then(function (res) {
+            if(res.body.length!=0){
+              this.shopCart = res.body;
+              window.localStorage.setItem("scid", JSON.stringify(this.shopCart));
+              layer.msg("删除成功！",{
+                icon:1
+              },function(){
+                window.location.reload();
+              });
+            }else{
+              window.localStorage.removeItem("scid");
+              this.shopCart=[];
+              this.flag=false;
+              layer.msg("删除成功！",{
+                icon:1
+              },function(){
+                window.location.reload();
+              });
+            }
+          }, function () {
+            console.log('请求处理失败');
+          });
+        })
+      },createOrder:function(){
+        if ((JSON.parse(window.localStorage.getItem("order")))==null){
+          var shocId = this.shopCart.shopcId;
+          this.$http.post(urlprofix + '/consumer/order/createOrderByShopCart?shopcId='+shocId,"", {
+            emulateJSON: true
+          }).then(function (res) {
+            window.localStorage.setItem("order", JSON.stringify(res.body));
+            layer.open({
+              type: 2 //此处以iframe举例
+              ,title: '订单'
+              ,area: ['1220px', '600px']
+              ,shade: 0.3
+              ,maxmin: true
+              ,/*offset: [ //为了演示，随机坐标
+            Math.random()*($(window).height()-300)
+            ,Math.random()*($(window).width()-390)
+          ]
+          ,*/content: 'order.html'
+              ,btn: [/*'继续弹出',*/ '全部关闭'] //只是为了演示
+              ,yes: function(){
+                //$(that).click();
+                layer.closeAll();
+              }/*
+          ,btn2: function(){
+            layer.closeAll();
+          }*/
+
+              ,zIndex: layer.zIndex //重点1
+              ,success: function(layero){
+                layer.setTop(layero); //重点2
+              }
+            });
+          }, function () {
+            console.log('请求处理失败');
+          });
+        }else{
+          layer.open({
+            type: 2 //此处以iframe举例
+            ,title: '订单'
+            ,area: ['1220px', '600px']
+            ,shade: 0.3
+            ,maxmin: true
+            ,/*offset: [ //为了演示，随机坐标
+            Math.random()*($(window).height()-300)
+            ,Math.random()*($(window).width()-390)
+          ]
+          ,*/content: 'order.html'
+            ,btn: [/*'继续弹出',*/ '全部关闭'] //只是为了演示
+            ,yes: function(){
+              //$(that).click();
+              layer.closeAll();
+            }/*
+          ,btn2: function(){
+            layer.closeAll();
+          }*/
+
+            ,zIndex: layer.zIndex //重点1
+            ,success: function(layero){
+              layer.setTop(layero); //重点2
+            }
+          });
+        }
+        //多窗口模式，层叠置顶
+
+      },
+      logout:function(){
+        layer.confirm(this.userobj.userName+":是否退出登录", {btn: ['确定', '取消'], title: "提示"},  () =>{
+          window.localStorage.removeItem("userKey")
+          this.userobj=null;
+          layer.msg("退出登录！",{
+            icon:7,
+            time:2000
+          },function (){
+            window.location.href="login.html";
+          })
+        })
+      },gerCurrentUser:function(){
+        /*this.$http.options={withCredentials: true}*/
+        this.$http.get(urlprofix+"consumer/user/getCurrentUser",{credentials: true},{
+          emulateJSON:true
+        }).then(function(result){
+          if(!result.body){
+            this.userobj=null;
+            window.localStorage.removeItem("userKey")
+          }
+        })
+
+      }
+    }
+  });
+
+/*var app = new Vue({
+  el: "#app",
+  data: {
+    userobj: {},
+  },
+
+  mounted: function () {
+
+
+    this.userobj = JSON.parse(window.localStorage.getItem("userKey"));
+    if (this.userobj) {
+      this.gerCurrentUser();
+    }
+
+  },
+  watch: {},
+  created: function () {
+
+
+  },
+  computed: {},
+
+  methods: {
+    registry: function () {
+
+
+      if (this.registryValidata()) {
+        const userCode = jQuery("#userCode").val();
+        const email = jQuery("#email").val();
+        this.$http.post(urlprofix + "userv/user/isExistence", {userCode: userCode, email: email}, {
+          emulateJSON: true
+        }).then(function (result) {
+          if (result.body.message) {
+            layer.msg(result.body.message, {
+              icon: 2
+            })
+          } else {
+            var data = jQuery(".layui-form-item input[name]").serializeArray();
+            var dataJson = {};
+            for (const i in data) {
+              dataJson[data[i].name] = data[i].value;
+            }
+            this.$http.post(urlprofix + "consumer/user/registry", dataJson, {
+              emulateJSON: true,
+              withCredentials: true
+            }).then(function (result) {
+              layer.msg(result.body.message, {
+                icon: result.body.isregistry == "false" ? 2 : 1
+              }, function () {
+                if (result.body.isregistry == "true") {
+                  window.location.href = "login.html"
+                }
+              })
+            })
+          }
+        })
+
+
+      }
+    }
+    ,
+    validataPassword2: function () {
+      if (jQuery("#password2").val() != jQuery("#password").val()) {
+        layer.msg("密码不一致", {
+          icon: 2
+        });
+      }
+    },
+    validata: function () {
+
+    }
+    ,
+    registryValidata: function () {
+
+      var bool = true;
+      jQuery(".layui-form-item input[name]").each(function () {
+        if (jQuery(this).val() == null || jQuery(this).val() == '') {
+          layer.msg(jQuery(this).attr("placeholder") + "不能为空！")
+          bool = false;
+          return bool;
+        }
+
+
+      })
+      if (bool) {
+        this.validataPassword2();
+      }
+      if (bool) {
+        const emailReg = /^[0-9a-zA-Z]{6,18}@((qq)|(163)|(sina)|(gmail))((.com)|(.cn))$/;
+        const email = jQuery("#email").val();
+
+        if (!emailReg.test(email)) {
+          layer.msg("邮箱格式不正确[格式 ：{6-18@host(.com|.cn)]", {
+            icon: 2
+          })
+          bool = false;
+        }
+      }
+      return bool;
+    }
+    ,
+    gerCurrentUser: function () {
+      /!*this.$http.options={withCredentials: true}*!/
+      this.$http.get(urlprofix + "consumer/user/getCurrentUser", {credentials: true}, {
+        emulateJSON: true
+      }).then(function (result) {
+        if (!result.body) {
+          this.userobj = null;
+          window.localStorage.removeItem("userKey")
+        }
+      })
+    },
+
+    logout: function () {
+      layer.confirm(this.userobj.userName + ":是否退出登录", {btn: ['确定', '取消'], title: "提示"}, () => {
+        window.localStorage.removeItem("userKey")
+        this.userobj = null;
+        layer.msg("退出登录！", {
+          icon: 7,
+          time: 2000
+        })
+      })
+    },
+
+
+  }
+})*/
+
+
 </script>
 </body>
 </html>
